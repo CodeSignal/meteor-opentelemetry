@@ -221,8 +221,9 @@ function cursorIds(cursor: Mongo.Cursor<{}>) {
   };
 }
 
-function _defaultDbStatementSerializer(commandObj: string | Record<string, unknown>, isRoot=true) {
+function _defaultDbStatementSerializer(commandObj: string | Record<string, unknown> | null | undefined, isRoot=true) {
   const { enhancedDbReporting } = settings;
+  if (commandObj == null) return '?';
   if (typeof commandObj == 'string' && isRoot) return { _id: '?' };
   if (enhancedDbReporting) return commandObj; // pretty leaky tbh
 
