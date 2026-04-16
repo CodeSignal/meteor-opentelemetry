@@ -13,7 +13,10 @@ import { settings } from "../settings";
 
 const tracer = trace.getTracer('meteor.mongo');
 
+const shouldInstrumentMongo = settings.enabled && !settings.disableMongoInstrumentation;
+
 MeteorX.onReady(() => {
+  if (!shouldInstrumentMongo) return;
   const x1 = MeteorX.MongoCursor.prototype as InstanceType< typeof Mongo.Cursor>;
   // cursors have _cursorDescription: {collectionName, selector, options}
   const origFind = x1.fetchAsync;
@@ -78,6 +81,7 @@ MeteorX.onReady(() => {
   }
 });
 
+if (shouldInstrumentMongo) {
 const x2 = Mongo.Collection.prototype as InstanceType< typeof Mongo.Collection>;
 const origFindOne = x2.findOneAsync;
 x2.findOneAsync = function (this: Mongo.Collection<{}>, ...args: [string]) {
@@ -168,6 +172,7 @@ x2.upsertAsync = function (this: Mongo.Collection<{}>, ...args) {
         span.end();
       }
     });
+}
 }
 
 

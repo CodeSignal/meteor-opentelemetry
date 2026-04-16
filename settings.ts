@@ -7,6 +7,7 @@ export const settings: {
   serverResourceAttributes?: Attributes;
   clientResourceAttributes?: Attributes;
   enhancedDbReporting?: boolean;
+  disableMongoInstrumentation?: boolean;
 } = {
   ...Meteor.settings.packages?.["danopia:opentelemetry"] ?? {},
 };
