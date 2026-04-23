@@ -9,7 +9,7 @@ export const settings: {
   enhancedDbReporting?: boolean;
   disableMongoInstrumentation?: boolean;
 } = {
-  ...Meteor.settings.packages?.["danopia:opentelemetry"] ?? {},
+  ...Meteor.settings.packages?.["codesignal:opentelemetry"] ?? {},
 };
 
 // special-casing for particular deployment environments..

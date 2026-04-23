@@ -1,8 +1,8 @@
 Package.describe({
-  name: 'danopia:opentelemetry',
+  name: 'codesignal:opentelemetry',
   version: '0.9.1',
   summary: 'Meteor v3 instrumentations for OpenTelemetry tracing',
-  git: 'https://github.com/danopia/meteor-opentelemetry',
+  git: 'https://github.com/CodeSignal/meteor-opentelemetry',
   documentation: 'README.md',
 });
 
@@ -43,6 +43,6 @@ Package.onUse(function(api) {
 Package.onTest(function(api) {
   api.use('ecmascript');
   api.use('tinytest');
-  api.use('danopia:opentelemetry');
+  api.use('codesignal:opentelemetry');
   api.mainModule('opentelemetry-tests.js');
 });

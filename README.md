@@ -1,4 +1,4 @@
-# `danopia:opentelemetry`
+# `codesignal:opentelemetry`
 
 This Meteor package hooks up OpenTelemetry (and OTLP-JSON) within a Meteor app.
 It should help with reporting distributed traces to modern APM products from your existing Meteor app.
@@ -34,7 +34,7 @@ Maintanence and updates shall continue (at a casual cadence).
 The server tracer is easily set up from importing it at the top of your server entrypoint:
 
 ```ts
-import 'meteor/danopia:opentelemetry';
+import 'meteor/codesignal:opentelemetry';
 ```
 
 If you'd like to benefit from the standard NodeJS instrumentations
@@ -50,7 +50,7 @@ Now you just need to configure the instrumentations.
 For example, this server file disables `fs` and also skips HTTP healthchecks:
 
 ```ts
-import 'meteor/danopia:opentelemetry';
+import 'meteor/codesignal:opentelemetry';
 
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
@@ -87,7 +87,7 @@ Example snippit for your `client.ts` file:
 ```ts
 // Set up an OpenTelemetry provider using DDP submission and tracing
 // (required to have client-to-server DDP tracing)
-import 'meteor/danopia:opentelemetry';
+import 'meteor/codesignal:opentelemetry';
 
 // Register additional browser-side instrumentations
 // (optional)
@@ -115,7 +115,7 @@ You can also enable this library and supply configuration via Meteor settings:
 ```json
 {
   "packages": {
-    "danopia:opentelemetry": {
+    "codesignal:opentelemetry": {
       "enabled": true,
       "serverResourceAttributes": {
         "service.name": "my-app",
@@ -139,7 +139,7 @@ So it might be desirable to set resource attributes via Meteor settings:
 ```json
 {
   "packages": {
-    "danopia:opentelemetry": {
+    "codesignal:opentelemetry": {
       "enabled": true,
       "serverResourceAttributes": {
         "service.name": "my-app",
