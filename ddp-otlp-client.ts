@@ -2,7 +2,6 @@ import { Meteor } from "meteor/meteor";
 
 import { SpanExporter, ReadableSpan } from '@opentelemetry/sdk-trace-web';
 import { ExportResultCode, type ExportResult } from "@opentelemetry/core";
-import { JsonTraceSerializer } from '@opentelemetry/otlp-transformer';
 import { context, type HrTime } from "@opentelemetry/api";
 import { suppressTracing } from "@opentelemetry/core";
 import { discoverClockOffset } from "./clock-sync-client";
@@ -10,6 +9,14 @@ import { discoverClockOffset } from "./clock-sync-client";
 export class DDPSpanExporter implements SpanExporter {
   export(spans: ReadableSpan[], resultCallback: (result: ExportResult) => void): void {
     context.with(suppressTracing(context.active()), async () => {
+      let JsonTraceSerializer: typeof import('@opentelemetry/otlp-transformer').JsonTraceSerializer;
+      try {
+        ({ JsonTraceSerializer } = await import('@opentelemetry/otlp-transformer'));
+      } catch (err) {
+        resultCallback({ code: ExportResultCode.FAILED, error: err as Error });
+        return;
+      }
+
       // @ts-expect-error Untyped?
       const clockOffset = Meteor.connection.status().connected
         ? await discoverClockOffset()
