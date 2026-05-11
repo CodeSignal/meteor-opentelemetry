@@ -27,4 +27,14 @@ export const tracer = new WebTracerProvider({
     new BatchSpanProcessor(new DDPSpanExporter()),
   ],
 });
-tracer.register();
+if (!Meteor.isAppTest || isOtelForcedInTests()) {
+  tracer.register();
+}
+
+function isOtelForcedInTests(): boolean {
+  try {
+    return localStorage.getItem('otel-trace-in-tests') === '1';
+  } catch {
+    return false;
+  }
+}
