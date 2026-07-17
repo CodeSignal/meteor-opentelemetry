@@ -12,12 +12,18 @@ import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
 
 import { settings } from "./settings";
+import {
+  resolveMetricExportIntervalMillis,
+  resolveServerResourceAttributes,
+} from './metrics-config';
 
 import './instrument/ddp-server'
 import './instrument/mongodb'
 
 if (settings.enabled) {
-  const resource = resourceFromAttributes(settings.serverResourceAttributes ?? {});
+  const resource = resourceFromAttributes(
+    resolveServerResourceAttributes(settings.serverResourceAttributes, process.env['HOSTNAME'])
+  );
 
   const metricsProvider = new MeterProvider({
     resource,
@@ -27,7 +33,9 @@ if (settings.enabled) {
         exporter: new OTLPMetricExporter({
           url: settings.otlpEndpoint ? `${settings.otlpEndpoint}/v1/metrics` : undefined,
         }),
-        exportIntervalMillis: 60_000,
+        exportIntervalMillis: resolveMetricExportIntervalMillis(
+          settings.metricExportIntervalMillis ?? process.env['OTEL_METRIC_EXPORT_INTERVAL']
+        ),
       }),
     ],
   });

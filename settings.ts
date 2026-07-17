@@ -4,6 +4,7 @@ import { Meteor } from "meteor/meteor";
 export const settings: {
   enabled?: boolean;
   otlpEndpoint?: string;
+  metricExportIntervalMillis?: number;
   serverResourceAttributes?: Attributes;
   clientResourceAttributes?: Attributes;
   enhancedDbReporting?: boolean;
