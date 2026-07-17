@@ -2,7 +2,6 @@ import { diag, DiagConsoleLogger, DiagLogLevel, metrics } from "@opentelemetry/a
 import { logs } from "@opentelemetry/api-logs";
 diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.INFO);
 
-import { resourceFromAttributes } from '@opentelemetry/resources';
 import { BatchSpanProcessor, NodeTracerProvider } from '@opentelemetry/sdk-trace-node';
 import { PeriodicExportingMetricReader, MeterProvider } from '@opentelemetry/sdk-metrics';
 import { LoggerProvider, BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
@@ -12,12 +11,13 @@ import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
 import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
 
 import { settings } from "./settings";
+import { createServerResource, resolveMetricExportIntervalMillis } from './metrics-config';
 
 import './instrument/ddp-server'
 import './instrument/mongodb'
 
 if (settings.enabled) {
-  const resource = resourceFromAttributes(settings.serverResourceAttributes ?? {});
+  const resource = createServerResource(settings.serverResourceAttributes);
 
   const metricsProvider = new MeterProvider({
     resource,
@@ -27,7 +27,9 @@ if (settings.enabled) {
         exporter: new OTLPMetricExporter({
           url: settings.otlpEndpoint ? `${settings.otlpEndpoint}/v1/metrics` : undefined,
         }),
-        exportIntervalMillis: 60_000,
+        exportIntervalMillis: resolveMetricExportIntervalMillis(
+          settings.metricExportIntervalMillis ?? process.env['OTEL_METRIC_EXPORT_INTERVAL']
+        ),
       }),
     ],
   });
