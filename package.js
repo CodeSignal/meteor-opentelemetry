@@ -1,6 +1,6 @@
 Package.describe({
   name: 'codesignal:opentelemetry',
-  version: '0.10.1',
+  version: '0.10.2',
   summary: 'Meteor v3 instrumentations for OpenTelemetry tracing',
   git: 'https://github.com/CodeSignal/meteor-opentelemetry',
   documentation: 'README.md',
@@ -42,7 +42,9 @@ Package.onUse(function(api) {
 
 Package.onTest(function(api) {
   api.use('ecmascript');
+  api.use('typescript');
   api.use('tinytest');
   api.use('codesignal:opentelemetry');
-  api.mainModule('opentelemetry-tests.js');
+  api.addFiles('metrics-config.ts', 'server');
+  api.mainModule('opentelemetry-tests.js', 'server');
 });

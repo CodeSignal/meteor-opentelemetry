@@ -117,6 +117,7 @@ You can also enable this library and supply configuration via Meteor settings:
   "packages": {
     "codesignal:opentelemetry": {
       "enabled": true,
+      "metricExportIntervalMillis": 15000,
       "serverResourceAttributes": {
         "service.name": "my-app",
         "deployment.environment": "local"
@@ -129,6 +130,14 @@ You can also enable this library and supply configuration via Meteor settings:
   }
 }
 ```
+
+Server metrics export every 60 seconds by default. Set `metricExportIntervalMillis`, or the standard
+`OTEL_METRIC_EXPORT_INTERVAL` environment variable, to a positive millisecond value to use a
+shorter or longer interval. The Meteor setting takes precedence over the environment variable.
+When `service.instance.id` is not explicitly present in `serverResourceAttributes`, the server uses
+OpenTelemetry's service-instance detector to generate a UUID for the server process. This prevents
+independent process-local counters from sharing one Prometheus series. An explicitly configured
+`service.instance.id` always takes precedence over the generated value.
 
 Note that OpenTelemetry defines a number of environment variables such as
 `OTEL_EXPORTER_OTLP_ENDPOINT` and `OTEL_RESOURCE_ATTRIBUTES`.
