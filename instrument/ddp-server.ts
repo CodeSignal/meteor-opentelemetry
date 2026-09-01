@@ -21,11 +21,7 @@ import { Meteor } from "meteor/meteor";
         'rpc.ddp.version': this.version,
         'rpc.ddp.method_id': payload.id,
         'meteor.user_id': this.userId,
-        'net.peer.name': this.socket.remoteAddress,
-        'net.peer.port': this.socket.remotePort,
-        'net.host.name': this.socket.address.address,
-        'net.host.port': this.socket.address.port,
-        'net.sock.family': ({'IPv4':'inet','IPv6':'inet6'})[this.socket.address.family] ?? this.socket.address.family,
+        ...socketAttributes(this.socket),
       },
     }, ctx, () => originMethod.call(this, payload, unblock));
   };
@@ -49,11 +45,7 @@ import { Meteor } from "meteor/meteor";
         'rpc.ddp.version': this.version,
         'rpc.ddp.sub_id': payload.id,
         'meteor.user_id': this.userId,
-        'net.peer.name': this.socket.remoteAddress,
-        'net.peer.port': this.socket.remotePort,
-        'net.host.name': this.socket.address.address,
-        'net.host.port': this.socket.address.port,
-        'net.sock.family': ({'IPv4':'inet','IPv6':'inet6'})[this.socket.address.family] ?? this.socket.address.family,
+        ...socketAttributes(this.socket),
       },
     }, ctx, span => {
       this.subSpans.set(payload.id, span);
@@ -121,4 +113,19 @@ function recordSpanError(currentSpan: Span, error: unknown) {
       message: error.message,
     });
   }
+}
+
+// ddp-server 3.3.0 (shipped with Meteor 3.5) nulls Session.socket on an ungraceful
+// disconnect, but keeps the session alive for disconnectGracePeriod so queued methods
+// and subs still run and can be replayed if the client reconnects. Those execute with
+// no socket attached, so every read off it has to be guarded.
+function socketAttributes(socket) {
+  const family = socket?.address?.family;
+  return {
+    'net.peer.name': socket?.remoteAddress,
+    'net.peer.port': socket?.remotePort,
+    'net.host.name': socket?.address?.address,
+    'net.host.port': socket?.address?.port,
+    'net.sock.family': family ? ({'IPv4':'inet','IPv6':'inet6'})[family] ?? family : undefined,
+  };
 }

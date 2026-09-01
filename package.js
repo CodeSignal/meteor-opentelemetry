@@ -1,6 +1,6 @@
 Package.describe({
   name: 'codesignal:opentelemetry',
-  version: '0.10.2',
+  version: '0.10.3',
   summary: 'Meteor v3 instrumentations for OpenTelemetry tracing',
   git: 'https://github.com/CodeSignal/meteor-opentelemetry',
   documentation: 'README.md',
